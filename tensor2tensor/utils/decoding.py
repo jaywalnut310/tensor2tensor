@@ -259,7 +259,7 @@ def decode_from_file(estimator,
         decode_hp.batch_size, decode_hp.max_input_size)
     gen_fn = make_input_fn_from_generator(input_gen)
     example = gen_fn()
-    return _decode_input_tensor_to_features_dict(example, hparams)
+    return _decode_input_tensor_to_features_dict(example, hparams, decode_hp.extra_length)
 
   decodes = []
   result_iter = estimator.predict(input_fn, checkpoint_path=checkpoint_path)
@@ -616,7 +616,7 @@ def _interactive_input_tensor_to_features_dict(feature_map, hparams):
   return features
 
 
-def _decode_input_tensor_to_features_dict(feature_map, hparams):
+def _decode_input_tensor_to_features_dict(feature_map, hparams, extra_length=50):
   """Convert the interactive input format (see above) to a dictionary.
 
   Args:
@@ -641,6 +641,6 @@ def _decode_input_tensor_to_features_dict(feature_map, hparams):
   features["input_space_id"] = input_space_id
   features["target_space_id"] = target_space_id
   features["decode_length"] = (
-      IMAGE_DECODE_LENGTH if input_is_image else tf.shape(x)[1] + 50)
+      IMAGE_DECODE_LENGTH if input_is_image else extra_length)
   features["inputs"] = x
   return features
